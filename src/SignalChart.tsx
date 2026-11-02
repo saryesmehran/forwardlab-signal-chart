@@ -254,7 +254,7 @@ export const SignalChart = forwardRef<SignalChartHandle, SignalChartProps>(funct
     const chart = chartRef.current;
     const series = seriesRef.current;
     if (!chart || !series) return;
-    const feed = latest.current.props.datafeed ?? defaultFeed();
+    const feed = latest.current.props.datafeed ?? defaultFeed(props.apiKey);
     let alive = true;
     let unsubscribe: (() => void) | undefined;
     let loadingMore = false;
@@ -330,7 +330,7 @@ export const SignalChart = forwardRef<SignalChartHandle, SignalChartProps>(funct
       unsubscribe?.();
       chart.timeScale().unsubscribeVisibleLogicalRangeChange(onRange);
     };
-  }, [symbol, timeframe, reloadKey]);
+  }, [symbol, timeframe, props.apiKey, reloadKey]);
 
   // Drop a selection or draft that no longer exists / no longer applies.
   useEffect(() => {

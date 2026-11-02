@@ -17,22 +17,37 @@ interface EngineRow {
  *   GET {engine}/api/v1/client/market/candles?symbol&tf&limit[&to=<ms>]
  *
  * Rows are oldest → newest, `bucket` is the bar start in UTC epoch ms, OHLC
- * are decimal strings (bid side). No auth: the engine serves the last 90 days
- * without one, plenty for signal charts on M1–H4. The engine answers browsers
- * only from allowlisted origins, so the partner's domain must be on that list.
+ * are decimal strings (bid side).
+ *
+ * Access: with an embed key (`fl_pk_…`, issued by ForwardLab) the engine serves
+ * any origin. The key is sent as `X-Embed-Key`, and only when given: without
+ * one the request stays a plain GET, which the engine answers for allowlisted
+ * origins only (forwardlab.ir itself). The key is publishable — it sits in the
+ * page source by design and grants read-only market data, nothing else.
  *
  * Live updates poll the newest 2 bars every `pollMs`; the chart replaces the
  * forming bar or appends the next one.
  */
-export function createForwardLabFeed(opts: { engineUrl?: string; pollMs?: number } = {}): Datafeed {
+export function createForwardLabFeed(
+  opts: { apiKey?: string; engineUrl?: string; pollMs?: number } = {},
+): Datafeed {
   const base = (opts.engineUrl ?? FORWARDLAB_ENGINE_URL).replace(/\/+$/, "");
   const pollMs = opts.pollMs ?? 3000;
+  const apiKey = opts.apiKey?.trim();
+  // A custom header makes the browser preflight, so send it only when there is a key.
+  const init: RequestInit | undefined = apiKey ? { headers: { "X-Embed-Key": apiKey } } : undefined;
 
   const get = async (symbol: string, tf: string, limit: number, toSec?: number): Promise<Bar[]> => {
     const q = new URLSearchParams({ symbol, tf, limit: String(Math.min(limit, 1000)) });
     if (toSec !== undefined) q.set("to", String(Math.floor(toSec) * 1000));
-    const res = await fetch(`${base}/api/v1/client/market/candles?${q}`);
-    if (!res.ok) throw new Error(`ForwardLab feed: HTTP ${res.status}`);
+    const res = await fetch(`${base}/api/v1/client/market/candles?${q}`, init);
+    if (!res.ok) {
+      const code = await res
+        .json()
+        .then((b: { error_code?: string }) => b.error_code)
+        .catch(() => undefined);
+      throw new Error(`ForwardLab feed: HTTP ${res.status}${code ? ` ${code}` : ""}`);
+    }
     const body = (await res.json()) as { success?: boolean; data?: EngineRow[] };
     if (body.success !== true || !Array.isArray(body.data)) throw new Error("ForwardLab feed: bad response");
     return body.data.map((r) => ({
@@ -70,9 +85,12 @@ export function createForwardLabFeed(opts: { engineUrl?: string; pollMs?: number
   };
 }
 
-let shared: Datafeed | null = null;
+const shared = new Map<string, Datafeed>();
 
-/** One feed for every chart on the page that didn't bring its own. */
-export function defaultFeed(): Datafeed {
-  return (shared ??= createForwardLabFeed());
+/** One feed per key for every chart on the page that didn't bring its own. */
+export function defaultFeed(apiKey?: string): Datafeed {
+  const k = apiKey?.trim() ?? "";
+  let feed = shared.get(k);
+  if (!feed) shared.set(k, (feed = createForwardLabFeed({ apiKey: k || undefined })));
+  return feed;
 }

@@ -98,6 +98,8 @@ export interface SignalChartProps {
   timeframe: Timeframe;
   /** Prices come from ForwardLab by default; override only for demos and tests. */
   datafeed?: Datafeed;
+  /** ForwardLab embed key (`fl_pk_…`). Lets the chart load prices on any domain. */
+  apiKey?: string;
   /** Controlled drawings. Leave undefined to let the chart keep its own (seeded by `defaultDrawings`). */
   drawings?: Drawing[];
   defaultDrawings?: Drawing[];

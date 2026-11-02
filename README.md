@@ -19,7 +19,9 @@ Symbols: `XAUUSD`, `EURUSD`, `GBPUSD`, `USDCHF`. Timeframes: `M1`, `M5`, `M15`, 
 
 > **Access control is your server's job.** Send each subscriber **only** the drawings their plan allows. The strategy toggle in the chart is a display filter, not a security boundary: anything sent to the browser can be read.
 
-**Prices:** the chart loads candles from the ForwardLab engine by itself. There is no API key, no proxy, and nothing to set up on your side. ForwardLab must add your site's domain(s) to the engine's allowlist. Send us your production and staging domains, e.g. `https://example.com`.
+**Prices:** the chart loads candles from the ForwardLab engine by itself. There is no proxy and no server work on your side. You only pass the **embed key** ForwardLab gives you (`apiKey: "fl_pk_…"`), and it works on any domain.
+
+The embed key is *publishable*: it is meant to sit in your page source. It only reads public market candles and can't touch accounts or trading. Don't put it anywhere secret, and ask ForwardLab for a new one if you need to rotate it.
 
 ---
 
@@ -45,6 +47,7 @@ npm i github:saryesmehran/forwardlab-signal-char
     symbol: "XAUUSD",
     timeframe: "M15",
     partner: "investoport",         // your utm_source
+    apiKey: "fl_pk_…",              // embed key from ForwardLab
     locale: "en",                   // or "fa" (RTL)
     theme: "dark",                  // or "light"
     strategies: [{ id: "scalp", name: "Scalp", color: "#22c55e" }],
@@ -58,7 +61,7 @@ Admin panel:
 
 ```js
 const chart = FL.mount(el, {
-  mode: "admin", symbol: "XAUUSD", timeframe: "M15", partner: "investoport",
+  mode: "admin", symbol: "XAUUSD", timeframe: "M15", partner: "investoport", apiKey: "fl_pk_…",
   strategies,
   drawings: savedDrawings,
   onSymbolChange: (symbol) => chart.update({ symbol }),
@@ -83,6 +86,7 @@ import { SignalChart } from "forwardlab-signal-chart";
   symbol="EURUSD"
   timeframe="H1"
   partner="investoport"
+  apiKey="fl_pk_…"
   drawings={drawings}
   strategies={strategies}
 />
@@ -98,6 +102,7 @@ import { SignalChart } from "forwardlab-signal-chart";
 | `symbol` | `"XAUUSD" \| "EURUSD" \| "GBPUSD" \| "USDCHF"` | required |
 | `timeframe` | `"M1" \| "M5" \| "M15" \| "H1" \| "H4"` | required; chosen by the admin |
 | `partner` | `string` | required; sent as `utm_source` |
+| `apiKey` | `string` | embed key from ForwardLab (`fl_pk_…`); needed on any domain other than ForwardLab's own |
 | `drawings` | `Drawing[]` | drawings to show (controlled) |
 | `onDrawingsChange` | `(drawings) => void` | admin: fires after every finished edit with the full list |
 | `onSymbolChange`, `onTimeframeChange` | callbacks | admin: pickers appear only when these are given |
@@ -145,7 +150,7 @@ Every link goes to `https://forwardlab.ir/` with:
 
 ```bash
 npm install
-npm run example     # opens http://localhost:5173/example/ with live ForwardLab prices
+npm run example     # opens http://localhost:5173/example/ with live ForwardLab prices (localhost:5173 works without a key)
 ```
 
 ## Build
