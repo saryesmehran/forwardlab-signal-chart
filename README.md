@@ -2,6 +2,13 @@
 
 A drop-in candlestick chart for signal pages. **ForwardLab provides the chart and the live prices.** Your site only places it on the page and stores your drawings.
 
+> [!IMPORTANT]
+> ## 🔑 You need an API key to receive the price feed
+>
+> ### To get your key, message us on Telegram: **[@forwardlabsupport](https://t.me/forwardlabsupport)**
+>
+> Without a key, the chart will not load prices on your website.
+
 - **Admin mode:** simple drawing tools (trend line, horizontal line, rectangle/zone), plus symbol and timeframe pickers. Each drawing has a colour, a dashed option, a label (e.g. `TP1`) and a strategy.
 - **Viewer mode:** read-only. Subscribers see the timeframe the admin picked and can toggle strategies on and off.
 - **ForwardLab watermark:** painted inside the chart canvas, so it shows at every size and theme and in screenshots. Clicking it opens ForwardLab with UTM tags.
@@ -19,9 +26,9 @@ Symbols: `XAUUSD`, `EURUSD`, `GBPUSD`, `USDCHF`. Timeframes: `M1`, `M5`, `M15`, 
 
 > **Access control is your server's job.** Send each subscriber **only** the drawings their plan allows. The strategy toggle in the chart is a display filter, not a security boundary: anything sent to the browser can be read.
 
-**Prices:** the chart loads candles from the ForwardLab engine by itself. There is no proxy and no server work on your side. You only pass the **embed key** ForwardLab gives you (`apiKey: "fl_pk_…"`), and it works on any domain.
+**Prices:** the chart loads candles from the ForwardLab engine by itself. There is no proxy and no server work on your side. You only pass the **embed key** ForwardLab gives you (`apiKey: "fl_pk_…"`), and it works on any domain. Get the key from **[@forwardlabsupport](https://t.me/forwardlabsupport)** on Telegram.
 
-The embed key is *publishable*: it is meant to sit in your page source. It only reads public market candles and can't touch accounts or trading. Don't put it anywhere secret, and ask ForwardLab for a new one if you need to rotate it.
+The embed key is *publishable*: it is meant to sit in your page source. It only reads public market candles and can't touch accounts or trading. You don't need to keep it secret. To rotate it, ask [@forwardlabsupport](https://t.me/forwardlabsupport) for a new one.
 
 ---
 
