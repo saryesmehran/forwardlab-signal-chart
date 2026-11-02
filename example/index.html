@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ForwardLab Signal Chart — example</title>
+  <style>
+    body { margin: 0; padding: 24px; background: #0b0c10; color: #ddd; font-family: system-ui, sans-serif; }
+    .wrap { display: grid; gap: 24px; max-width: 1100px; margin: 0 auto; }
+    h2 { font-size: 15px; margin: 0 0 8px; }
+    pre { background: #111; padding: 12px; border-radius: 8px; overflow: auto; max-height: 220px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div>
+      <h2>Admin panel — drawing tools, symbol and timeframe</h2>
+      <div id="admin"></div>
+    </div>
+    <div>
+      <h2>Subscriber view — read-only</h2>
+      <div id="viewer"></div>
+    </div>
+    <div>
+      <h2>Drawings JSON (what your server stores)</h2>
+      <pre id="json">[]</pre>
+    </div>
+  </div>
+
+  <!-- Run with `npm run example`: prices are served only to allowlisted origins (localhost:5173 is one). -->
+  <script src="../dist/signal-chart.standalone.js"></script>
+  <script>
+    const FL = window.ForwardLabSignalChart;
+
+    const strategies = [
+      { id: "scalp", name: "Scalp", color: "#22c55e" },
+      { id: "swing", name: "Swing", color: "#f59e0b" },
+    ];
+    const common = { strategies, partner: "investoport", locale: "en", theme: "dark", height: 420 };
+
+    let viewer;
+    const admin = FL.mount(document.getElementById("admin"), {
+      ...common,
+      mode: "admin",
+      symbol: "XAUUSD",
+      timeframe: "M15",
+      onSymbolChange: (symbol) => { admin.update({ symbol }); viewer.update({ symbol }); },
+      onTimeframeChange: (timeframe) => { admin.update({ timeframe }); viewer.update({ timeframe }); },
+      onDrawingsChange: (drawings) => {
+        document.getElementById("json").textContent = JSON.stringify(drawings, null, 2);
+        // In production: save to your server, which sends each subscriber only what their plan allows.
+        viewer.update({ drawings });
+      },
+    });
+
+    viewer = FL.mount(document.getElementById("viewer"), {
+      ...common,
+      mode: "viewer",
+      symbol: "XAUUSD",
+      timeframe: "M15",
+      onLinkClick: (placement) => console.log("forwardlab_chart_click", { placement }),
+    });
+  </script>
+</body>
+</html>

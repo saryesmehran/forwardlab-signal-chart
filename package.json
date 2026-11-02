@@ -1,0 +1,64 @@
+{
+  "name": "forwardlab-signal-chart",
+  "version": "0.1.0",
+  "description": "ForwardLab signal chart: live ForwardLab prices, simple line/shape drawings for signal admins, read-only viewer mode, built-in ForwardLab watermark and UTM CTA.",
+  "license": "UNLICENSED",
+  "keywords": [
+    "chart",
+    "trading",
+    "signals",
+    "forex",
+    "candlestick",
+    "forwardlab"
+  ],
+  "homepage": "https://github.com/saryesmehran/forwardlab-signal-char#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/saryesmehran/forwardlab-signal-char.git"
+  },
+  "type": "module",
+  "main": "./dist/signal-chart.js",
+  "module": "./dist/signal-chart.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/signal-chart.js"
+    },
+    "./standalone": "./dist/signal-chart.standalone.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "assets",
+    "README.md"
+  ],
+  "sideEffects": [
+    "./dist/signal-chart.standalone.js"
+  ],
+  "scripts": {
+    "build": "npm run build:lib && npm run build:standalone && npm run build:types",
+    "build:lib": "vite build --config vite.config.ts --mode lib",
+    "build:standalone": "vite build --config vite.config.ts --mode standalone",
+    "build:types": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "example": "vite --port 5173 --strictPort --open /example/",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "dependencies": {
+    "lightweight-charts": "4.2.3"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.13",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.4"
+  }
+}
