@@ -30,7 +30,7 @@ The embed key is *publishable*: it is meant to sit in your page source. It only 
 **npm (React or any bundler):**
 
 ```bash
-npm i github:saryesmehran/forwardlab-signal-char
+npm i github:saryesmehran/forwardlab-signal-chart
 ```
 
 **Plain HTML (e.g. server-rendered Python templates):** copy [`dist/signal-chart.standalone.js`](dist/signal-chart.standalone.js) to your static files. It is one file with React bundled inside, so the page needs nothing else.
